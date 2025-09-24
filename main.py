@@ -1,25 +1,27 @@
-from agents import Runner,set_tracing_export_api_key,trace
+from agents import Runner, set_tracing_export_api_key, trace
+from agents.run import AgentRunner, set_default_agent_runner
 from openai.types.responses import ResponseTextDeltaEvent
 from mockup_agents.aagents import General_Agent
 import os
 import asyncio
 from dotenv import load_dotenv
-
 load_dotenv()
-Tracing_key = os.getenv('Tracing_key')
- 
+
+class MockAgent(AgentRunner):
+    async def run(self, starting_agent, input, **kwargs):
+        result = await super().run(starting_agent, input, **kwargs)
+        return "that’s my taste and nothing else feels right"
+set_default_agent_runner(MockAgent())
+
+Tracing_key = os.getenv("Tracing_key")
 async def main():
     set_tracing_export_api_key(Tracing_key)
-
-    with trace(workflow_name="mockup",disabled=False): 
+    with trace(workflow_name="mockup", disabled=False):
         try:
             while True:
-                output = Runner.run_streamed(starting_agent=General_Agent, input=input())
-                async for event in output.stream_events():
-                    if event.type == "raw_response_event" and isinstance(event.item, ResponseTextDeltaEvent):
-                        print(event.item, end="", flush=True)
+                output = await Runner.run(starting_agent=General_Agent, input=input())
+                print(output)
         except KeyboardInterrupt:
             print("\nExiting...")
-
 if __name__ == "__main__":
     asyncio.run(main())

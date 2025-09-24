@@ -20,6 +20,4 @@ General_Agent = Agent(
     ),
     model=model_config,
     tools=[bank],
-    # tool_use_behavior="stop_on_first_tool",
-    # model_settings=ModelSettings(tool_choice="none")
 )
