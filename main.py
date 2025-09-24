@@ -9,7 +9,7 @@ load_dotenv()
 
 class MockAgent(AgentRunner):
     async def run(self, starting_agent, input, **kwargs):
-        result = await super().run(starting_agent, input, **kwargs)
+        return await super().run(starting_agent, input, **kwargs)
         return "that’s my taste and nothing else feels right"
 set_default_agent_runner(MockAgent())
 
